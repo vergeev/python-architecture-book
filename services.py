@@ -1,4 +1,5 @@
 from __future__ import annotations
+from datetime import date
 
 import model
 from model import OrderLine
@@ -11,6 +12,19 @@ class InvalidSku(Exception):
 
 def is_valid_sku(sku, batches):
     return sku in {b.sku for b in batches}
+
+
+def add_batch(
+    ref: str,
+    sku: str,
+    qty: int,
+    eta: date | None,
+    repo: AbstractRepository,
+    session
+) -> None:
+    batch = model.Batch(ref, sku, qty, eta)
+    repo.add(batch)
+    session.commit()
 
 
 def allocate(line: OrderLine, repo: AbstractRepository, session) -> str:
